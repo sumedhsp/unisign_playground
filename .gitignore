@@ -1,0 +1,19 @@
+*.swp
+__pycache__/**
+out/
+core*
+*.ipynb
+# *.sh
+*.bin
+wandb
+demo/
+backup
+*.pth
+#*.txt
+out/
+log/
+*.json
+*.xlsx
+*.mp4
+tools/*.jpg
+tools/*.mp4
