@@ -98,7 +98,8 @@ def main(args):
                 num_training_steps=int(args.epochs * len(train_dataloader)/args.gradient_accumulation_steps),
             )
     
-    model, optimizer, lr_scheduler = utils.init_deepspeed(args, model, optimizer, lr_scheduler)
+    model, optimizer, lr_scheduler = model, optimizer, lr_scheduler 
+    #utils.init_deepspeed(args, model, optimizer, lr_scheduler)
     model_without_ddp = model.module.module
     # print(model_without_ddp)
     print(optimizer)
@@ -122,8 +123,8 @@ def main(args):
     print(f"Start training for {args.epochs} epochs")
 
     for epoch in range(0, args.epochs):
-        if args.distributed:
-            train_sampler.set_epoch(epoch)
+        #if args.distributed:
+        #    train_sampler.set_epoch(epoch)
         
         train_stats = train_one_epoch(args, model, train_dataloader, optimizer, epoch)
 
