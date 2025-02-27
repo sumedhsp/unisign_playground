@@ -17,9 +17,14 @@ tensorboard==2.9.1
 tensorflow==2.9.1
 timm==0.8.10.dev0
 tokenizers==0.19.1
-torch==2.1.1+cu121
-torchaudio==2.1.1+cu121
-torchvision==0.16.1+cu121
 tqdm==4.65.0
 transformers==4.40.0
 sentencepiece==0.1.97
+einops
+deepspeed
+decord
+timm
+portalocker
+torch==2.1.1+cu121
+torchaudio==2.1.1+cu121
+torchvision==0.16.1+cu121

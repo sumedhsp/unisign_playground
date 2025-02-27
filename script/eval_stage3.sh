@@ -10,7 +10,7 @@ deepspeed --include localhost:0 --master_port 29511 fine_tuning.py \
    --lr 3e-4 \
    --output_dir out/test \
    --finetune $ckpt_path \
-   --dataset CSL_Daily \
+   --dataset WLASL \
    --task SLT \
    --eval \
    --rgb_support

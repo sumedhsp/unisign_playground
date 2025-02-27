@@ -17,7 +17,7 @@ from transformers import get_scheduler
 from config import *
 
 def main(args):
-    utils.init_distributed_mode_ds(args)
+    #utils.init_distributed_mode_ds(args)
 
     print(args)
     utils.set_seed(args.seed)
