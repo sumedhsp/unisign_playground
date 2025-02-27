@@ -240,8 +240,8 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
     header = 'Test:'
 
     target_dtype = None
-    if model.bfloat16_enabled():
-        target_dtype = torch.bfloat16
+    #if model.bfloat16_enabled():
+    #    target_dtype = torch.bfloat16
         
     with torch.no_grad():
         tgt_pres = []
