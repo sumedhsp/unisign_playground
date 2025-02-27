@@ -1,4 +1,4 @@
-mt5_path = "./pretrained_weight/mt5-base"
+mt5_path = "unisign_playground/pretrained/pytorch_model.bin"
 
 # label paths
 train_label_paths = {
