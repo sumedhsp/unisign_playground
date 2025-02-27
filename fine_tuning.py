@@ -242,14 +242,16 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
     header = 'Test:'
 
     device = next(model.parameters()).device  # Get model's device
-    target_dtype = torch.bfloat16 if hasattr(model, "bfloat16_enabled") and model.bfloat16_enabled() else None
+    model.to(torch.float32)
+    
+    #target_dtype = torch.bfloat16 if hasattr(model, "bfloat16_enabled") and model.bfloat16_enabled() else None
 
     
     def move_to_device(batch):
         """Moves tensor inputs to the correct device and dtype."""
         for key in batch.keys():
             if isinstance(batch[key], torch.Tensor):
-                batch[key] = batch[key].to(device, dtype=target_dtype)
+                batch[key] = batch[key].to(device, dtype=torch.float32)
         return batch
         
     with torch.no_grad():

@@ -219,7 +219,7 @@ class Uni_Sign(nn.Module):
         body_feat = None
         for part in self.modes:
             # project position to hidden dim
-            proj_feat = self.proj_linear[part](src_input[part]).permute(0,3,1,2) #B,C,T,V
+            proj_feat = self.proj_linear[part](src_input[part].float()).permute(0,3,1,2) #B,C,T,V
             # spatial gcn forward
             gcn_feat = self.gcn_modules[part](proj_feat)
             if part == 'body':
