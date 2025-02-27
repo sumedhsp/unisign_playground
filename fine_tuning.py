@@ -117,6 +117,7 @@ def main(args):
                 print("📄 dev result")
                 evaluate(args, dev_dataloader, model, model_without_ddp, phase='dev')
             print("📄 test result")
+
             evaluate(args, test_dataloader, model, model_without_ddp, phase='test')
 
         return 
@@ -233,30 +234,41 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch):
 
     return  {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
+
 def evaluate(args, data_loader, model, model_without_ddp, phase):
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
 
-    target_dtype = None
-    #if model.bfloat16_enabled():
-    #    target_dtype = torch.bfloat16
+    device = next(model.parameters()).device  # Get model's device
+    target_dtype = torch.bfloat16 if hasattr(model, "bfloat16_enabled") and model.bfloat16_enabled() else None
+
+    
+    def move_to_device(batch):
+        """Moves tensor inputs to the correct device and dtype."""
+        for key in batch.keys():
+            if isinstance(batch[key], torch.Tensor):
+                batch[key] = batch[key].to(device, dtype=target_dtype)
+        return batch
         
     with torch.no_grad():
         tgt_pres = []
         tgt_refs = []
  
         for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, 10, header)):
-            if target_dtype != None:
+            '''if target_dtype != None:
                 for key in src_input.keys():
                     if isinstance(src_input[key], torch.Tensor):
-                        src_input[key] = src_input[key].to(target_dtype).cuda()
+                        src_input[key] = src_input[key].to(target_dtype).cuda()'''
+            src_input = move_to_device(src_input)
+            tgt_input = move_to_device(tgt_input)
             
             if args.task == "CSLR":
                 tgt_input['gt_sentence'] = tgt_input['gt_gloss']
-            stack_out = model(src_input, tgt_input)
             
+            # Forward pass
+            stack_out = model(src_input, tgt_input)
             total_loss = stack_out['loss']
             metric_logger.update(loss=total_loss.item())
         
@@ -269,11 +281,15 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
                 tgt_pres.append(output[i])
                 tgt_refs.append(tgt_input['gt_sentence'][i])
 
+    # post-processing
     tokenizer = model_without_ddp.mt5_tokenizer
     padding_value = tokenizer.eos_token_id
     
-    pad_tensor = torch.ones(150-len(tgt_pres[0])).cuda() * padding_value
-    tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
+    # Pad first element to avoid size mismatch in `pad_sequence`
+    pad_length = 150 - len(tgt_pres[0])
+    if pad_length > 0:
+        pad_tensor = torch.full((pad_length,), padding_value, dtype=torch.long, device=device)
+        tgt_pres[0] = torch.cat((tgt_pres[0], pad_tensor), dim=0)
 
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
