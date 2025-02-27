@@ -81,10 +81,12 @@ def main(args):
         print('Unexpected keys: \n', '\n'.join(ret.unexpected_keys))
     
     model_without_ddp = model
-    if args.distributed:
-        model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        model_without_ddp = model.module
+    
+    #if args.distributed:
+    #    model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+    #    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+    #    model_without_ddp = model.module
+    
     n_parameters = utils.count_parameters_in_MB(model_without_ddp)
     print(f'number of params: {n_parameters}M')
 
