@@ -100,7 +100,7 @@ def main(args):
     
     model, optimizer, lr_scheduler = model, optimizer, lr_scheduler 
     #utils.init_deepspeed(args, model, optimizer, lr_scheduler)
-    model_without_ddp = model.module.module
+    #model_without_ddp = model.module.module
     # print(model_without_ddp)
     print(optimizer)
 
