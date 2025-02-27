@@ -11,7 +11,7 @@ from stgcn_layers import Graph, get_stgcn_chain
 from deformable_attention_2d import DeformableAttention2D
 from transformers import MT5ForConditionalGeneration, T5Tokenizer 
 import warnings
-from config import mt5_path
+from config import mt5_path, mt5_repo
 
 def _no_grad_trunc_normal_(tensor, mean, std, a, b):
     # Cut & paste from PyTorch official master until it's in a few official releases - RW
@@ -136,8 +136,8 @@ class Uni_Sign(nn.Module):
                     nn.init.constant_(layer.weight, 0)
                     nn.init.constant_(layer.bias, 0)
 
-        self.mt5_model = MT5ForConditionalGeneration.from_pretrained(mt5_path)
-        self.mt5_tokenizer = T5Tokenizer.from_pretrained(mt5_path, legacy=False)
+        self.mt5_model = MT5ForConditionalGeneration.from_pretrained(mt5_repo)
+        self.mt5_tokenizer = T5Tokenizer.from_pretrained(mt5_repo, legacy=False)
     
         
     def _init_weights(self, m):

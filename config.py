@@ -1,4 +1,5 @@
 mt5_path = "unisign_playground/pretrained/pytorch_model.bin"
+mt5_repo = "google/mt5-base"
 
 # label paths
 train_label_paths = {
