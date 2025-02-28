@@ -232,8 +232,10 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
     sampled_indices = np.unique(sampled_indices)
     sampled_indices_real = tmp[sampled_indices]
 
+    print("Before loading image sample..")
     # load image sample
     imgs = load_video_support_rgb(full_path, sampled_indices_real)
+    print("After loading image sample..")
 
     # get hand bbox
     left_new_box, right_new_box, box_hw = bbox_4hands(left_skeletons,

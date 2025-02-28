@@ -236,6 +236,8 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch):
 
 
 def evaluate(args, data_loader, model, model_without_ddp, phase):
+    print ("In the evaluate function..")
+    
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -243,7 +245,7 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
 
     device = next(model.parameters()).device  # Get model's device
     model.to(torch.float32)
-    
+
     #target_dtype = torch.bfloat16 if hasattr(model, "bfloat16_enabled") and model.bfloat16_enabled() else None
 
     
