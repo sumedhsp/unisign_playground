@@ -14,6 +14,8 @@ import pathlib
 from torchvision import transforms
 from config import rgb_dirs, pose_dirs
 
+import sys
+
 # load sub-pose
 def load_part_kp(skeletons, confs, force_ok=False):
     thr = 0.3
@@ -237,6 +239,9 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
     imgs = load_video_support_rgb(full_path, sampled_indices_real)
     print("After loading image sample..")
 
+    if (imgs is None):
+        return {}
+
     # get hand bbox
     left_new_box, right_new_box, box_hw = bbox_4hands(left_skeletons,
                                                         right_skeletons,
@@ -322,20 +327,27 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
 
     return support_rgb_dict
 
-
 # use split rgb video for save time
 def load_video_support_rgb(path, tmp):
-    vr = VideoReader(path, num_threads=1, ctx=cpu(0))
     
-    vr.seek(0)
-    print ("Debugging loading of RGB data")
-    print ("Length of video reader: ", len(vr))
-    print ("Sampled indices : " , tmp)
-    buffer = vr.get_batch(tmp).asnumpy()
-    batch_image = buffer
-    del vr
+    try:
+        vr = VideoReader(path, num_threads=1, ctx=cpu(0))
+        
+        vr.seek(0)
+        print ("Debugging loading of RGB data")
+        print ("Length of video reader: ", len(vr))
+        print ("Sampled indices : " , tmp)
+        sys.stdout.flush()
+        
+        buffer = vr.get_batch(tmp).asnumpy()
+        batch_image = buffer
+        del vr
 
-    return batch_image
+        return batch_image
+    except Exception as e:
+        print (f"Error loading the video {path}: {e}")
+        sys.stdout.flush()
+        return None
 
 # build base dataset
 class Base_Dataset(Dataset.Dataset):
