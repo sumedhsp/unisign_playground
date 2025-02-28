@@ -326,6 +326,9 @@ def load_video_support_rgb(path, tmp):
     vr = VideoReader(path, num_threads=1, ctx=cpu(0))
     
     vr.seek(0)
+    print ("Debugging loading of RGB data")
+    print ("Length of video reader: ", len(vr))
+    print ("Sampled indices : " , tmp)
     buffer = vr.get_batch(tmp).asnumpy()
     batch_image = buffer
     del vr
