@@ -449,6 +449,8 @@ class S2T_Dataset(Base_Dataset):
             gloss = ''
         
         name_sample = sample['name']
+
+        print ("Entering the load pose in S2T class..")
         pose_sample, support_rgb_dict = self.load_pose(sample['video_path'])
 
         return name_sample,pose_sample,text, gloss, support_rgb_dict
@@ -485,6 +487,7 @@ class S2T_Dataset(Base_Dataset):
         kps_with_scores = load_part_kp(skeletons, confs, force_ok=True)
 
         support_rgb_dict = {}
+        print ("Entering for RGB support now..")
         if self.rgb_support:
             full_path = os.path.join(self.rgb_dir, path)
             support_rgb_dict = load_support_rgb_dict(tmp, skeletons, confs, full_path, self.data_transform)
