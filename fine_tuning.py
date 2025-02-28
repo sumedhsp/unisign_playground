@@ -236,8 +236,6 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch):
 
 
 def evaluate(args, data_loader, model, model_without_ddp, phase):
-    print ("In the evaluate function..")
-    
     model.eval()
 
     metric_logger = utils.MetricLogger(delimiter="  ")

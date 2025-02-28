@@ -234,10 +234,8 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
     sampled_indices = np.unique(sampled_indices)
     sampled_indices_real = tmp[sampled_indices]
 
-    print("Before loading image sample..")
     # load image sample
     imgs = load_video_support_rgb(full_path, sampled_indices_real)
-    print("After loading image sample..")
 
     if (imgs is None):
         return {}
@@ -332,14 +330,17 @@ def load_video_support_rgb(path, tmp):
     
     try:
         vr = VideoReader(path, num_threads=1, ctx=cpu(0))
-        
         vr.seek(0)
-        print ("Debugging loading of RGB data")
-        print ("Length of video reader: ", len(vr))
-        print ("Sampled indices : " , tmp)
-        sys.stdout.flush()
-        
-        buffer = vr.get_batch(tmp).asnumpy()
+
+        num_frames = len(vr)
+        valid_indices = [idx for idx in tmp if idx < num_frames]
+
+        if not valid_indices:
+            print(f"Warning: All sampled indices are out of bounds for video {path}. Skipping..")        
+            sys.stdout.flush()
+            return None
+
+        buffer = vr.get_batch(valid_indices).asnumpy()
         batch_image = buffer
         del vr
 
@@ -462,7 +463,6 @@ class S2T_Dataset(Base_Dataset):
         
         name_sample = sample['name']
 
-        print ("Entering the load pose in S2T class..")
         pose_sample, support_rgb_dict = self.load_pose(sample['video_path'])
 
         return name_sample,pose_sample,text, gloss, support_rgb_dict
@@ -499,7 +499,6 @@ class S2T_Dataset(Base_Dataset):
         kps_with_scores = load_part_kp(skeletons, confs, force_ok=True)
 
         support_rgb_dict = {}
-        print ("Entering for RGB support now..")
         if self.rgb_support:
             full_path = os.path.join(self.rgb_dir, path)
             support_rgb_dict = load_support_rgb_dict(tmp, skeletons, confs, full_path, self.data_transform)
