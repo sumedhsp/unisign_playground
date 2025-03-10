@@ -202,15 +202,25 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch):
     print_freq = 10
     optimizer.zero_grad()
 
-    target_dtype = None
-    if model.bfloat16_enabled():
-        target_dtype = torch.bfloat16
+    device = next(model.parameters()).device  # Get model's device
+    model.to(torch.float32)
+    
+    def move_to_device(batch):
+        """Moves tensor inputs to the correct device and dtype."""
+        for key in batch.keys():
+            if isinstance(batch[key], torch.Tensor):
+                batch[key] = batch[key].to(device, dtype=torch.float32)
+        return batch
+
 
     for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-        if target_dtype != None:
+        '''if target_dtype != None:
             for key in src_input.keys():
                 if isinstance(src_input[key], torch.Tensor):
-                    src_input[key] = src_input[key].to(target_dtype).cuda()
+                    src_input[key] = src_input[key].to(target_dtype).cuda()'''
+        
+        src_input = move_to_device(src_input)
+        tgt_input = move_to_device(tgt_input)
 
         if args.task == "CSLR":
             tgt_input['gt_sentence'] = tgt_input['gt_gloss']
