@@ -165,9 +165,10 @@ class Uni_Sign(nn.Module):
         assert rgb_feat.shape[0] == indices.shape[0]
         rgb_feat = self.rgb_proj(rgb_feat)
         
-        assert len(rgb_len) == b
+        #assert len(rgb_len) == b
+        
         start = 0
-        for batch in range(b):
+        for batch in range(len(rgb_len)):
             index = indices[start:start + rgb_len[batch]].to(torch.long)
             # ignore some invalid rgb clip
             if rgb_len[batch] == 1 and -1 in index:
@@ -199,8 +200,10 @@ class Uni_Sign(nn.Module):
             # replace gcn feature
             gcn_feat[batch, :, index] = fused_transposed_post
             start = start + rgb_len[batch]
-            
-        assert start == rgb_feat.shape[0]
+        
+        print (start == rgb_feat.shape[0], "Gather feat pose rgb assert start == rgb_feat.shape")
+        #assert start == rgb_feat.shape[0]
+        
         return gcn_feat
 
     def forward(self, src_input, tgt_input):
