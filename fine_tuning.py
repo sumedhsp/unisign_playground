@@ -227,8 +227,8 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch):
         stack_out = model(src_input, tgt_input)
         
         total_loss = stack_out['loss']
-        model.backward(total_loss)
-        model.step()
+        total_loss.backward()
+        optimizer.step()
 
         loss_value = total_loss.item()
         if not math.isfinite(loss_value):
